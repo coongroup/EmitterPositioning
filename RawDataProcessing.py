@@ -1,0 +1,243 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb  1 14:07:41 2025
+
+@author: nlancaster
+"""
+#process files for the m/z values that will be tracked
+def int_val(raw_file,scan_num,mz,ppm_tol):
+    mz_lim = (mz-((ppm_tol*mz)/1e6),mz+((ppm_tol*mz)/1e6))
+    
+    mass_list = raw_file.GetMassListFromScanNum(scan_num)[0]
+    mass_indices = []
+    #this part might be a bit slow but I'm just going to do it with a for loop
+    for i,x in enumerate(mass_list[0]):
+        if (x>=mz_lim[0]) & (x<=mz_lim[1]):
+            mass_indices.append(i)
+    #add spectra intensities
+    spectra_int = []
+    for spectra in mass_indices:
+        spectra_int.append(mass_list[1][spectra])
+
+    return sum(spectra_int)
+
+
+def average_int(rawfile_path,ppm,mz2,mz3):
+    from pymsfilereader import MSFileReader
+    import numpy as np
+    
+    raw_file = MSFileReader(rawfile_path)
+    total_scans = raw_file.NumSpectra
+    
+    pep2 = []
+    pep3 = []
+    
+    for x in range(1,total_scans):
+        pep2.append(int_val(raw_file,x,mz2,ppm))
+        pep3.append(int_val(raw_file,x,mz3,ppm))
+        
+    return np.average(pep2),np.average(pep3)
+
+pep2_mz = 740.40185
+pep3_mz = 480.6093
+mass_tol = 15 #ppm
+
+
+files = ["P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp01.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp02.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp03.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp04.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp05.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp06.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp07.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp08.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp09.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp10.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp11.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp12.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp13.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp14.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp15.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp16.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp17.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp18.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp19.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp20.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp21.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp22.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp23.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp24.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp25.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp26.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp27.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp28.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp29.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp30.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp31.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp32.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp33.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp34.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp35.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp36.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp37.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp38.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp39.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp40.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp41.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp42.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp43.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp44.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp45.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp46.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_1Dexp_Exp47.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp01.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp02.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp03.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp04.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp05.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp06.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp07.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp08.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp09.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp10.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp11.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp12.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp13.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp14.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp15.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp16.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp17.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp18.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp19.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp20.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp21.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp22.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp23.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp24.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp25.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp26.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp27.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp28.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp29.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp30.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp31.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp32.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp33.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp34.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp35.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp36.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp37.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp38.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp39.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp40.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp41.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp42.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z1_Exp43.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp01.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp02.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp03.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp04.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp05.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp06.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp07.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp08.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp09.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp10.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp11.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp12.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp13.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp14.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp15.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp16.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp17.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp18.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp19.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp20.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp21.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp22.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp23.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp24.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp25.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp26.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp27.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp28.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp29.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp30.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp31.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp32.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp33.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp34.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp35.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp36.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp37.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp38.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp39.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp40.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp41.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp42.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z2_Exp43.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp01.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp02.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp03.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp04.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp05.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp06.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp07.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp08.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp09.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp10.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp11.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp12.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp13.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp14.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp15.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp16.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp17.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp18.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp19.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp20.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp21.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp22.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp23.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp24.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp25.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp26.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp27.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp28.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp29.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp30.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp31.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp32.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp33.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp34.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp35.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp36.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp37.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp38.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp39.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp40.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp41.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp42.raw",
+"P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/RawFiles/20250129_20uLBSA_2Dexp_z3_Exp43.raw"]
+
+total_files = len(files)
+        
+import os 
+file_names = []
+for x in files:
+    file_names.append(os.path.basename(x))
+
+pep2_int_list = []
+pep3_int_list = []
+for i,x in enumerate(files):
+    print(str(i+1) + ' of ' + str(total_files))
+    pep2_int, pep3_int = average_int(x,mass_tol,pep2_mz,pep3_mz)
+    pep2_int_list.append(pep2_int)
+    pep3_int_list.append(pep3_int)
+
+import pandas as pd
+
+output_df = pd.DataFrame({'File Name':file_names,'Peptide +2':pep2_int_list,'Peptide +3':pep3_int_list})
+
+output_df.to_csv("P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/20250202_BSA_peptide_raw_process.csv",index = False)
+
