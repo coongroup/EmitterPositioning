@@ -67,7 +67,7 @@ plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'Arial'
 
 fig.tight_layout()
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251113_EmitterPositioning_1Dplots.svg")
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251113_EmitterPositioning_1Dplots.svg")
 
 
 #%%Figure 2: prepare 2D plots with a max width of 3.33 in (max depth is 9.167 in)
@@ -132,9 +132,9 @@ for ax in axes:
     ax.invert_yaxis()
     ax.invert_xaxis()
     
-ax1.set_title('z = -0.856 mm',fontsize = 8)
-ax2.set_title('z = -2.856 mm',fontsize = 8)
-ax3.set_title('z = -4.856 mm',fontsize = 8)
+ax1.set_title('z = -0.9 mm',fontsize = 8)
+ax2.set_title('z = -2.9 mm',fontsize = 8)
+ax3.set_title('z = -4.9 mm',fontsize = 8)
 
 
 plt.rcParams['svg.fonttype'] = 'none'
@@ -142,15 +142,15 @@ plt.rcParams['font.family'] = 'Arial'
 
 fig.tight_layout()
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251113_EmitterPositioning_HeatMap_Peptide+2_SmallVer.svg")
+fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20260113_EmitterPositioning_HeatMap_Peptide+2_SmallVer.svg")
 
-#%% Example mass spectra for infusion - Figure S2
+#%% Example mass spectra for infusion - Figure S3
 import pandas as pd
 spectra = pd.read_csv('P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/ProcessingFiles/20250129_20uLBSA_1Dexp_Exp33_AveragedSpectrum_RemovedHeader.csv')
 
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize = (5,2.5),layout = 'constrained')
-markerline, stemlines, baseline = ax.stem(spectra['m/z'],spectra['Relative'],markerfmt=" ",basefmt=" ",linefmt='black')
+markerline, stemlines, baseline = ax.stem(spectra['m/z'],spectra['Intensity'],markerfmt=" ",basefmt=" ",linefmt='black')
 
 
 
@@ -162,14 +162,14 @@ ax.spines[['top','right']].set_visible(False)
 ax.set_ylim(0,)
 ax.set_xlim(290,1500)
 ax.set_xlabel('m/z')
-ax.set_ylabel('Relative Intensity')
+ax.set_ylabel('Intensity')
 
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'Arial'
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251211_MS_spectra_v1.svg")
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20250108_MS_spectra_v1.svg")
 
-#%%Supplemental Figure 3: prepare supplemental plots showing tic stability over infusion period
+#%%Figure S4: prepare supplemental plots showing tic stability over infusion period
 from pymsfilereader import MSFileReader
 
 
@@ -275,12 +275,15 @@ plt.rcParams['font.family'] = 'Arial'
 
 fig.tight_layout()
 
-fig.savefig('C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20250202_StablityTest_BSA_Infusion.svg')
+# fig.savefig('C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20250202_StablityTest_BSA_Infusion.svg')
 
-#%%Supplemental Figure 4: prepare supplemental plots showing QC reads for 1D and 2D experiments heatmap generation
+#%%Figure S5: prepare supplemental plots showing QC reads for 1D and 2D experiments heatmap generation
 import pandas as pd
 
-
+def rsd_calc(values):
+    import numpy as np
+    return np.std(values)/np.average(values)*100
+    
 def qc_data(path):
     import pandas as pd
     df = pd.read_excel(path)
@@ -302,23 +305,59 @@ pep2_label = 'LGEYGFQNALIVR, +2'
 pep3_label = 'RHPEYAVSVLLR, +3'
 
 import matplotlib.pyplot as plt
-fig,((ax1,ax2),(ax3,ax4)) = plt.subplots(2,2,figsize = (7,5) )
+fig,((ax1,ax2),(ax3,ax4)) = plt.subplots(2,2,figsize = (7,6) )
 
 ax1.plot(qc_1d_2[0],qc_1d_2[1],label = pep2_label,marker = 'o',color = 'royalblue')
 ax1.plot(qc_1d_3[0],qc_1d_3[1],label = pep3_label,marker = 'o',color = 'maroon')
 ax1.set_title('1D',fontsize = 12,fontweight = 'bold')
 
+pep2_rsd = rsd_calc(qc_1d_2[1])
+pep3_rsd = rsd_calc(qc_1d_3[1])
+x_text_pos = 0.7
+y_text_pos = 1
+ax1.annotate(str(round(pep2_rsd,1))+'% RSD',(x_text_pos,y_text_pos),xycoords = 'axes fraction',color = 'royalblue',fontsize = 11,fontweight = 'bold',va = 'bottom')
+ax1.annotate(str(round(pep3_rsd,1))+'% RSD',(x_text_pos,y_text_pos - 0.09),xycoords = 'axes fraction',color = 'maroon',fontsize = 11,fontweight = 'bold',va = 'bottom')
+
 ax2.plot(qc_2d_z1_2[0],qc_2d_z1_2[1],label = pep2_label,marker = 'o',color = 'royalblue')
 ax2.plot(qc_2d_z1_3[0],qc_2d_z1_3[1],label = pep3_label,marker = 'o',color = 'maroon')
-ax2.set_title('2D, z = -0.856',fontsize = 12,fontweight = 'bold')
+ax2.set_title('2D, z = -0.9',fontsize = 12,fontweight = 'bold')
+
+
+pep2_rsd = rsd_calc(qc_2d_z1_2[1])
+pep3_rsd = rsd_calc(qc_2d_z1_3[1])
+x_text_pos = 0.7
+y_text_pos = 0.4
+ax2.annotate(str(round(pep2_rsd,1))+'% RSD',(x_text_pos,y_text_pos),xycoords = 'axes fraction',color = 'royalblue',fontsize = 11,fontweight = 'bold',va = 'bottom')
+ax2.annotate(str(round(pep3_rsd,1))+'% RSD',(x_text_pos,y_text_pos - 0.09),xycoords = 'axes fraction',color = 'maroon',fontsize = 11,fontweight = 'bold',va = 'bottom')
+
+
 
 ax3.plot(qc_2d_z2_2[0],qc_2d_z2_2[1],label = pep2_label,marker = 'o',color = 'royalblue')
 ax3.plot(qc_2d_z2_3[0],qc_2d_z2_3[1],label = pep3_label,marker = 'o',color = 'maroon')
-ax3.set_title('2D, z = -2.856',fontsize = 12,fontweight = 'bold')
+ax3.set_title('2D, z = -2.9',fontsize = 12,fontweight = 'bold')
+
+pep2_rsd = rsd_calc(qc_2d_z2_2[1])
+pep3_rsd = rsd_calc(qc_2d_z2_3[1])
+x_text_pos = 0.7
+y_text_pos = 1
+ax3.annotate(str(round(pep2_rsd,1))+'% RSD',(x_text_pos,y_text_pos),xycoords = 'axes fraction',color = 'royalblue',fontsize = 11,fontweight = 'bold',va = 'bottom')
+ax3.annotate(str(round(pep3_rsd,1))+'% RSD',(x_text_pos,y_text_pos - 0.09),xycoords = 'axes fraction',color = 'maroon',fontsize = 11,fontweight = 'bold',va = 'bottom')
+
+
+
+
 
 ax4.plot(qc_2d_z3_2[0],qc_2d_z3_2[1],label = pep2_label,marker = 'o',color = 'royalblue')
 ax4.plot(qc_2d_z3_3[0],qc_2d_z3_3[1],label = pep3_label,marker = 'o',color = 'maroon')
-ax4.set_title('2D, z = -4.856',fontsize = 12,fontweight = 'bold')
+ax4.set_title('2D, z = -4.9',fontsize = 12,fontweight = 'bold')
+pep2_rsd = rsd_calc(qc_2d_z3_2[1])
+pep3_rsd = rsd_calc(qc_2d_z3_3[1])
+x_text_pos = 0.7
+y_text_pos = 1
+ax4.annotate(str(round(pep2_rsd,1))+'% RSD',(x_text_pos,y_text_pos),xycoords = 'axes fraction',color = 'royalblue',fontsize = 11,fontweight = 'bold',va = 'bottom')
+ax4.annotate(str(round(pep3_rsd,1))+'% RSD',(x_text_pos,y_text_pos - 0.09),xycoords = 'axes fraction',color = 'maroon',fontsize = 11,fontweight = 'bold',va = 'bottom')
+
+
 
 
 axes = (ax1,ax2,ax3,ax4)
@@ -336,50 +375,21 @@ plt.rcParams['font.family'] = 'Arial'
 
 fig.tight_layout()
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251118_EmitterPositioning_QC_plots.svg")
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20260109_EmitterPositioning_QC_plots_v2.svg")
 
-#%% fitting 1d data to determine the center - Figure S6
+#%% fitting 1d data to determine the center - Figure S7
 import numpy as np
 import pandas as pd
 from scipy.interpolate import UnivariateSpline
 
-def find_center(df,ax, resolution=1000):
-    
+def find_center(df,ax):
 
-    
-    """
-    Estimate center of a peak using spline interpolation.
-    
-    
-    Parameters:
-        x (list or array): X-values of the data points.
-        y (list or array): Y-values of the data points.
-        resolution (int): Number of points for interpolation (default: 1000).
-    
-    Returns:
-        x_fine (array): Interpolated X-values.
-        y_fine (array): Interpolated Y-values.
-    """
     # Convert to numpy arrays
     x = np.array(df['rel pos'])
     y = np.array(df['Intensity'])
     
-    # Fit spline
-    spline = UnivariateSpline(x, y,s = 0)
-    
-    # Interpolate
-    x_fine = np.linspace(x.min(), x.max(), resolution)
-    y_fine = spline(x_fine)
-    
-    # Find peak and half max
-    peak_max = np.max(y_fine)
 
-    # Find indice of max
-    indices = np.where(y_fine == peak_max)[0]
-    if len(indices) < 1:
-        raise ValueError("No points found.")
-    
-    center = x_fine[indices[0]]
+    peak_max = max(y)
     
     #calculate peak centroid
     def centroid_calc(x,y):
@@ -391,13 +401,15 @@ def find_center(df,ax, resolution=1000):
             denom += y[i]
         centroid = num/denom
         return centroid
-    
-    center = centroid_calc(x_fine,y_fine)
-    ax.spines[['top','right']].set_visible(False)
-    print(center)
 
-    ax.plot(x_fine,y_fine,color = 'black',label = 'Spline Fit')
-    ax.scatter(df['rel pos'],df['Intensity'],color = 'royalblue',label = 'Experimental')
+    
+    
+    center = centroid_calc(x,y)
+    ax.spines[['top','right']].set_visible(False)
+
+
+
+    ax.plot(df['rel pos'],df['Intensity'],color = 'royalblue',marker = 'o')
     ax.set_ylim(0,)
     ax.set_ylabel('Intensity',fontsize = 10)
     ax.axvline( center,linestyle = '--',color = 'black',linewidth = 1.5)
@@ -405,7 +417,7 @@ def find_center(df,ax, resolution=1000):
 
     ax.tick_params('both',labelsize =10)
     ax.yaxis.get_offset_text().set_fontsize(10)
-    ax.annotate(str(round(center,2))+ " mm",(center,peak_max*0.15),rotation = -90,fontsize = 10)
+    ax.annotate(str(round(center,1))+ " mm",(center,peak_max*0.15),rotation = -90,fontsize = 10)
     return center
 
 import pandas as pd
@@ -443,11 +455,6 @@ ax3.set_xlabel('y position (mm)',fontsize = 10)
 ax4.set_xlabel('y position (mm)',fontsize = 10)
 
 
-ax1.legend(frameon = False, fontsize = 10,handlelength = 1,loc = [0.58,0.83])
-ax2.legend(frameon = False, fontsize = 10,handlelength = 1,loc = [0.58,0.83])
-ax3.legend(frameon = False, fontsize = 10,handlelength = 1,loc = [0.58,0.83])
-ax4.legend(frameon = False, fontsize = 10,handlelength = 1,loc = [0.58,0.83])
-
 ax1.set_title(pep2_label+ ' (x dim)',fontsize = 10)
 ax2.set_title(pep3_label+ ' (x dim)',fontsize = 10)
 ax3.set_title(pep2_label+ ' (y dim)',fontsize = 10)
@@ -457,8 +464,46 @@ ax4.set_title(pep3_label+ ' (y dim)',fontsize = 10)
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'Arial'
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251118_xy_CenterSplineFit_v2.svg")
-#%%Supplemental Figure 7: prepare 2D plots with a max width of 3.33 in (max depth is 9.167 in)
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20260112_EmitterPositioning_xyCenterDist_v1.svg")
+
+#%% Figure S8 - Precursor Ratio plot
+import pandas as pd
+
+pep2_1d = pd.read_excel("P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/ProcessingFiles/1D_Data_Pep2_FixedExtraZpoint.xlsx")
+pep3_1d = pd.read_excel("P:/Projects/NML_2024_Internal_MultiColumn/EmitterInterferenceAssessments/20250117_PositioningExp_Rd03/ProcessingFiles/1D_Data_Pep3_FixedExtraZpoint.xlsx")
+
+pep2_label = 'LGEYGFQNALIVR, +2'
+pep3_label = 'RHPEYAVSVLLR, +3'
+
+
+
+z_data = [pep2_1d['z_rel'][32:45],pep2_1d['Intensity'][32:45],pep3_1d['z_rel'][32:45],pep3_1d['Intensity'][32:45]]
+
+
+z_data_dif = z_data[1]/z_data[3]
+
+fig,ax = plt.subplots(layout = 'constrained',figsize = (4,3))
+ax.spines[['top','right']].set_visible(False)
+    
+
+ax.plot(z_data[0],z_data_dif,marker = 'o')
+
+
+ax.set_ylim(0,1.4)
+ax.set_xlim(0.1,-6.1)
+ax.set_xlabel('z position (mm)')
+ax.set_ylabel('Intensity Ratio')
+
+plt.rcParams['svg.fonttype'] = 'none'
+plt.rcParams['font.family'] = 'Arial'
+
+
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20260109_EmitterPositioning_PrecRatio_v1.svg")
+
+
+
+
+#%%Figure S10: prepare 2D plots with a max width of 3.33 in (max depth is 9.167 in)
 #for the +3 ion
 import pandas as pd
 import numpy as np
@@ -522,9 +567,9 @@ for ax in axes:
     ax.invert_yaxis()
     ax.invert_xaxis()
     
-ax1.set_title('z = -0.856 mm',fontsize = 8)
-ax2.set_title('z = -2.856 mm',fontsize = 8)
-ax3.set_title('z = -4.856 mm',fontsize = 8)
+ax1.set_title('z = -0.9 mm',fontsize = 8)
+ax2.set_title('z = -2.9 mm',fontsize = 8)
+ax3.set_title('z = -4.9 mm',fontsize = 8)
 
 
 plt.rcParams['svg.fonttype'] = 'none'
@@ -532,12 +577,12 @@ plt.rcParams['font.family'] = 'Arial'
 
 fig.tight_layout()
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251113_EmitterPositioning_HeatMap_Peptide+3_SmallVer.svg")
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20260113_EmitterPositioning_HeatMap_Peptide+3_SmallVer.svg")
 
 
 
 
-#%% Create Figure S8  - width vs z
+#%% Create Figure S11  - width vs z
 
 import numpy as np
 import pandas as pd
@@ -750,8 +795,8 @@ plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'Arial'
 
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251107_EmitterPositioning_width_zDependence_v2.svg")
-#%% fitting 2d data to determine the center as function of z position - overlaid plots - Figure S9
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251107_EmitterPositioning_width_zDependence_v2.svg")
+#%% fitting 2d data to determine the center as function of z position - overlaid plots - Figure S12
 import numpy as np
 import pandas as pd
 from scipy.interpolate import UnivariateSpline
@@ -829,12 +874,12 @@ data_z0 = data_z0[data_z0['QC?']!='QC'].reset_index(drop = True)
 data_z2 = data_z2[data_z2['QC?']!='QC'].reset_index(drop = True)
 data_z4 = data_z4[data_z4['QC?']!='QC'].reset_index(drop = True)
 
-find_center(data_z4,ax1, 'z = -4.856','red')
+find_center(data_z4,ax1, 'z = -4.9','red')
 
 
-find_center(data_z2,ax1, 'z = -2.856','blue')
+find_center(data_z2,ax1, 'z = -2.9','blue')
 
-find_center(data_z0,ax1, 'z = -0.856','black')
+find_center(data_z0,ax1, 'z = -0.9','black')
 
 
 #read in dataset - pep3
@@ -852,12 +897,12 @@ data_z0 = data_z0[data_z0['QC?']!='QC'].reset_index(drop = True)
 data_z2 = data_z2[data_z2['QC?']!='QC'].reset_index(drop = True)
 data_z4 = data_z4[data_z4['QC?']!='QC'].reset_index(drop = True)
 
-find_center(data_z4,ax2, 'z = -4.856','red')
+find_center(data_z4,ax2, 'z = -4.9','red')
 
 
-find_center(data_z2,ax2, 'z = -2.856','blue')
+find_center(data_z2,ax2, 'z = -2.9','blue')
 
-find_center(data_z0,ax2, 'z = -0.856','black')
+find_center(data_z0,ax2, 'z = -0.9','black')
 
 
 
@@ -870,9 +915,9 @@ legend_loc = [0.64,0.81]
 
 
 handles,labels = ax1.get_legend_handles_labels()
-ax1.legend(handles[::-1],labels[::-1],frameon = False)
+ax1.legend(handles[::-1],labels[::-1],frameon = False,loc = 'upper left')
 handles,labels = ax2.get_legend_handles_labels()
-ax2.legend(handles[::-1],labels[::-1],frameon = False)
+ax2.legend(handles[::-1],labels[::-1],frameon = False,loc = 'upper left')
 
 ax1.set_title(pep2_label,fontsize = 10)
 ax2.set_title(pep3_label,fontsize = 10)
@@ -882,5 +927,4 @@ ax2.set_title(pep3_label,fontsize = 10)
 plt.rcParams['svg.fonttype'] = 'none'
 plt.rcParams['font.family'] = 'Arial'
 
-fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/ManuscriptPrep/PythonFigures/20251208_zDep_Ypos_Overlay_v1.svg")
-
+# fig.savefig("C:/Users/nlancaster/OneDrive - UW-Madison/2024_EmitterPosition_JASMS_Note_Manuscript/JASMS_Revision_Rd01/PythonFigures/20251208_zDep_Ypos_Overlay_v1.svg")
